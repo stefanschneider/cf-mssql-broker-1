@@ -72,10 +72,10 @@ Example for a local trusted `brokerMssqlConnection` with ODBC driver:
 Setup you GOPATH env variable
 
 ```sh
-go get github.com/tools/godep
-go get github.com/hpcloud/cf-mssql-broker
+go get -u -v github.com/tools/godep
+go get -u -v github.com/cloudfoundry-incubator/cf-mssql-broker
 
-cd $GOPATH/src/github.com/hpcloud/cf-mssql-broker # cd $env:GOPATH/src/github.com/hpcloud/cf-mssql-broker
+cd $GOPATH/src/github.com/cloudfoundry-incubator/cf-mssql-broker # cd $env:GOPATH/src/github.com/cloudfoundry-incubator/cf-mssql-broker
 
 godep restore
 go build
@@ -141,9 +141,16 @@ You need admin access to a Cloud Foundry deployment to add a new service broker.
 cf create-service-broker mssql-broker1 username password http://192.168.1.10:3000
 cf enable-service-access mssql-dev
 ```
+
+## Connecting to an external SQL Server
+
+The broker service can run on the local SQL Server machine or on a remote machine (even as a CF app). It only needs to be able to send SQL queries/commands to the SQL Server. When the broker service is run on a remote location the `brokerMssqlConnection` has to be configured with the right IP, port, and credentials. You need to make sure that the network and firewall is setup so that the broker service has access to the SQL Server and that the credentials provided are authorized to create and drop databases.
+
+Also, make sure the the CF applications that bind and connect to the SQL service database instances have network access to the configured `servedMssqlBindingHostname` and `servedMssqlBindingPort` entires. The following confiugations can affect what CF apps can reach in the network: Cloud Foundry security grous (i.e. cf security-groups), OpenStack/AWS sercurity groups for the DEAs/Cells and the SQL Server machines, Windows Firewall settings on the SQL Server machine, etc.
+
 ## Binding credentials exmaple
 
-VCAP_SERVICES env variable for a CF application with a mssql service binding will contin the crednetials to the SQL Server. The folowing [credential fields](https://github.com/hpcloud/cf-mssql-broker/blob/master/mssql_binding_credentials.go) will be used:
+VCAP_SERVICES env variable for a CF application with a mssql service binding will contin the crednetials to the SQL Server. The folowing [credential fields](https://github.com/cloudfoundry-incubator/cf-mssql-broker/blob/master/mssql_binding_credentials.go) will be used:
  * "host" - IP address or host of the SQL Server
  * "port" - The listening TCP port number
  * "name" - Database name
